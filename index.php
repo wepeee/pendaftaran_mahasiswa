@@ -10,7 +10,7 @@ include 'config.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran Mahasiswa</title>
     <style>
-        
+
     </style>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -21,42 +21,51 @@ include 'config.php';
 
         <h1>Form Pendaftaran Mahasiswa</h1>
         <form class="form-daftar" action="proses_daftar.php" method="POST">
-            <label for="nama">Nama:</label><br>
-            <input type="text" id="nama" name="nama" required><br><br>
+            <label for="nama">Nama:</label>
+            <input type="text" id="nama" name="nama" required><br>
 
-            <label for="email">Email:</label><br>
-            <input type="email" id="email" name="email" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br>
 
-            <label for="jurusan">Jurusan:</label><br>
-            <select id="jurusan" name="jurusan" required>
-                <option value="Teknik Informatika">Teknik Informatika</option>
-                <option value="Sistem Informasi">Sistem Informasi</option>
-                <option value="Teknik Elektro">Teknik Elektro</option>
-            </select><br><br>
+            <label for="jurusan">Jurusan:</label>
+            <input type="text" id="jurusan" name="jurusan" required><br>
 
-            <label for="tanggal">Tanggal Pendaftaran:</label><br>
-            <input type="date" id="tanggal" name="tanggal" required><br><br>
+            <label for="tanggal_pendaftaran">Tanggal Pendaftaran:</label>
+            <input type="date" id="tanggal_pendaftaran" name="tanggal_pendaftaran" required><br>
+
+            <label for="id_pegawai">Pegawai:</label>
+            <select id="id_pegawai" name="id_pegawai" required>
+                <option value="">Pilih Pegawai</option>
+                <?php
+                $pegawaiQuery = "SELECT id, nama FROM pegawai";
+                $pegawaiResult = $conn->query($pegawaiQuery);
+                while ($pegawai = $pegawaiResult->fetch_assoc()) {
+                    echo "<option value='" . $pegawai['id'] . "'>" . $pegawai['nama'] . "</option>";
+                }
+                ?>
+            </select><br>
 
             <button type="submit">Daftar</button>
         </form>
 
         <h2>Daftar Mahasiswa Terdaftar</h2>
         <table>
-        <thead>
-    <tr>
-        <th>No</th>
-        <th>Nama</th>
-        <th>Email</th>
-        <th>Jurusan</th>
-        <th>Tanggal Pendaftaran</th>
-        <th>Aksi</th>
-    </tr>
-</thead>
-
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Email</th>
+                    <th>Jurusan</th>
+                    <th>Tanggal Pendaftaran</th>
+                    <th>Pegawai</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php
-                // Ambil data dari tabel mahasiswa
-                $sql = "SELECT * FROM mahasiswa";
+                $sql = "SELECT mahasiswa.*, pegawai.nama AS nama_pegawai 
+            FROM mahasiswa 
+            LEFT JOIN pegawai ON mahasiswa.id_pegawai = pegawai.id";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
@@ -68,6 +77,7 @@ include 'config.php';
                     <td>" . $row['email'] . "</td>
                     <td>" . $row['jurusan'] . "</td>
                     <td>" . $row['tanggal_pendaftaran'] . "</td>
+                    <td>" . ($row['nama_pegawai'] ?? 'Belum Ditentukan') . "</td>
                     <td>
                         <form action='hapus.php' method='POST' style='display:inline;'>
                             <input type='hidden' name='id' value='" . $row['id'] . "'>
@@ -77,10 +87,11 @@ include 'config.php';
                   </tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='6'>Belum ada data mahasiswa</td></tr>";
+                    echo "<tr><td colspan='7'>Belum ada data mahasiswa</td></tr>";
                 }
                 ?>
             </tbody>
+
 
         </table>
     </div>
