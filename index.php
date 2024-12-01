@@ -13,6 +13,7 @@ include 'config.php';
 
     </style>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 
 <body>
@@ -20,7 +21,7 @@ include 'config.php';
 
 
         <h1>Form Pendaftaran Mahasiswa</h1>
-        <form class="form-daftar" action="proses_daftar.php" method="POST">
+        <form class="form-daftar" action="proses_daftar.php" method="POST" enctype="multipart/form-data">
             <label for="nama">Nama:</label>
             <input type="text" id="nama" name="nama" required><br>
 
@@ -45,8 +46,12 @@ include 'config.php';
                 ?>
             </select><br>
 
+            <label for="foto">Unggah Foto:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" required><br>
+
             <button type="submit">Daftar</button>
         </form>
+
 
         <h2>Daftar Mahasiswa Terdaftar</h2>
         <table>
@@ -58,6 +63,7 @@ include 'config.php';
                     <th>Jurusan</th>
                     <th>Tanggal Pendaftaran</th>
                     <th>Pegawai</th>
+                    <th>Foto</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -78,6 +84,7 @@ include 'config.php';
                     <td>" . $row['jurusan'] . "</td>
                     <td>" . $row['tanggal_pendaftaran'] . "</td>
                     <td>" . ($row['nama_pegawai'] ?? 'Belum Ditentukan') . "</td>
+                    <td><img src='uploads/" . $row['foto'] . "' alt='Foto Mahasiswa' width='50'></td>
                     <td>
                         <form action='hapus.php' method='POST' style='display:inline;'>
                             <input type='hidden' name='id' value='" . $row['id'] . "'>
@@ -87,7 +94,7 @@ include 'config.php';
                   </tr>";
                     }
                 } else {
-                    echo "<tr><td colspan='7'>Belum ada data mahasiswa</td></tr>";
+                    echo "<tr><td colspan='8'>Belum ada data mahasiswa</td></tr>";
                 }
                 ?>
             </tbody>
@@ -95,6 +102,9 @@ include 'config.php';
 
         </table>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 </body>
 
 </html>

@@ -8,13 +8,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tanggal_pendaftaran = $_POST['tanggal_pendaftaran'];
     $id_pegawai = $_POST['id_pegawai'];
 
-    $sql = "INSERT INTO mahasiswa (nama, email, jurusan, tanggal_pendaftaran, id_pegawai) 
-            VALUES ('$nama', '$email', '$jurusan', '$tanggal_pendaftaran', '$id_pegawai')";
+    // Proses Unggah Foto
+    $foto = $_FILES['foto'];
+    $fotoName = time() . '_' . $foto['name']; // Gunakan timestamp agar unik
+    $fotoTmpName = $foto['tmp_name'];
+    $fotoFolder = 'uploads/' . $fotoName;
 
-    if ($conn->query($sql) === TRUE) {
-        header("Location: index.php");
+    // Cek apakah terjadi error saat upload
+    if ($foto['error'] !== UPLOAD_ERR_OK) {
+        echo "Error Upload: " . $foto['error'];
+        exit;
+    }
+
+    // Proses upload file
+    if (move_uploaded_file($fotoTmpName, $fotoFolder)) {
+        // Simpan Data ke Database
+        $sql = "INSERT INTO mahasiswa (nama, email, jurusan, tanggal_pendaftaran, id_pegawai, foto) 
+                VALUES ('$nama', '$email', '$jurusan', '$tanggal_pendaftaran', '$id_pegawai', '$fotoName')";
+
+        if ($conn->query($sql) === TRUE) {
+            header("Location: index.php");
+        } else {
+            echo "Error: " . $sql . "<br>" . $conn->error;
+        }
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        echo "Gagal mengunggah foto.";
     }
 }
-?>
